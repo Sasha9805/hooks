@@ -1,32 +1,63 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
-const MyContext = React.createContext();
-
 const App = () => {
-  return (
-    <MyContext.Provider value="Hello World">
-      <Child />
-    </MyContext.Provider>
-  );
+  const [ value, setValue ] = useState(0);
+  const [ visible, setVisible ] = useState(true);
+
+  // useEffect(() => {
+  //   setTimeout(() => setValue(null), 2500);
+  // }, []);
+
+  if (visible) {
+    return (
+      <div>
+        <button onClick={() => setValue(v => v+1)}>+</button>
+        <button onClick={() => setVisible(false)}>hide</button>
+        {/*<HookCounter value={value} />*/}
+        <Notification />
+      </div>
+    );
+  } else {
+    return (
+      <button onClick={() => setVisible(true)}>show</button>
+    );
+  }
 };
 
-const Child = () => {
-  const value = useContext(MyContext);
+const HookCounter = ({value}) => {
+
+  useEffect(() => {
+    console.log('mount');
+
+    return () => console.log('unmount');
+  }, []);
+
+  useEffect(() => {
+    console.log('update');
+  });
+
+  // useEffect(() => () => console.log('unmount'), []);
+
   return <p>{value}</p>;
 };
 
-// const Child = () => {
-//   return (
-//     <MyContext.Consumer>
-//       {
-//         (value) => {
-//           return <p>{value}</p>;
-//         }
-//       }
-//     </MyContext.Consumer>
-//   );
-// };
+const Notification = () => {
+
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div>
+      {visible ? <p>Hello</p> : null}
+    </div>
+  );
+};
 
 ReactDOM.render(
   <App />,
